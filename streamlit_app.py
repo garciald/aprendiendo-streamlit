@@ -1,40 +1,25 @@
-import altair as alt
-import numpy as np
-import pandas as pd
 import streamlit as st
+import pandas as pd
+import plotly.express as px
 
-"""
-# Welcome to Streamlit!
+# Cargar los datos
+df = pd.read_csv('/ruta/a/tu/archivo.csv')
 
-Edit `/streamlit_app.py` to customize this app to your heart's desire :heart:.
-If you have any questions, checkout our [documentation](https://docs.streamlit.io) and [community
-forums](https://discuss.streamlit.io).
+# Título de la aplicación
+st.title('Visualización de Datos de Películas')
 
-In the meantime, below is an example of what you can do with just a few lines of code:
-"""
+# Selector de género
+selected_genres = st.multiselect('Seleccione género(s)', options=df['Genre'].unique(), default=df['Genre'].unique()[0])
 
-num_points = st.slider("Number of points in spiral", 1, 10000, 1100)
-num_turns = st.slider("Number of turns in spiral", 1, 300, 31)
+# Selector de año
+selected_year = st.slider('Seleccione el año', min_value=int(df['Year'].min()), max_value=int(df['Year'].max()), value=int(df['Year'].min()))
 
-indices = np.linspace(0, 1, num_points)
-theta = 2 * np.pi * num_turns * indices
-radius = indices
+# Filtrar datos basados en selecciones
+filtered_df = df[(df['Year'] == selected_year) & df['Genre'].isin(selected_genres)]
 
-x = radius * np.cos(theta)
-y = radius * np.sin(theta)
+# Crear y mostrar el gráfico
+fig = px.scatter(filtered_df, x='Revenue (Millions)', y='Rating',
+                 size='Votes', color='Genre', hover_name='Title',
+                 log_x=True, size_max=60)
 
-df = pd.DataFrame({
-    "x": x,
-    "y": y,
-    "idx": indices,
-    "rand": np.random.randn(num_points),
-})
-
-st.altair_chart(alt.Chart(df, height=700, width=700)
-    .mark_point(filled=True)
-    .encode(
-        x=alt.X("x", axis=None),
-        y=alt.Y("y", axis=None),
-        color=alt.Color("idx", legend=None, scale=alt.Scale()),
-        size=alt.Size("rand", legend=None, scale=alt.Scale(range=[1, 150])),
-    ))
+st.plotly_chart(fig)

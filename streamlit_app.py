@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 # Cargar los datos
-df = pd.read_csv('/ruta/a/tu/archivo.csv')
+df = pd.read_csv('IMDB-Movie-Data.csv')
 
 # Título de la aplicación
 st.title('Visualización de Datos de Películas')
